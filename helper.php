@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 07:47:29
- * @modify date 2022-05-19 16:11:52
+ * @modify date 2022-05-19 22:30:43
  * @license GPLv3
  * @desc [description]
  */
@@ -38,5 +38,15 @@ if (!function_exists('getSLiMSOAuthConfig'))
             $data = $configState->fetch(PDO::FETCH_OBJ);
             return @unserialize($data->setting_value);
         }
+    }
+}
+
+if (!function_exists('isHttps'))
+{
+    function isHttps()
+    {
+        $url = parse_url($_SERVER['HTTP_REFERER']);
+
+        return $url['scheme'] === 'https';
     }
 }

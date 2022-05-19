@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 08:05:39
- * @modify date 2022-05-19 16:35:58
+ * @modify date 2022-05-19 23:22:43
  * @license GPLv3
  * @desc [description]
  */
@@ -62,7 +62,7 @@ class Google extends Contract
         if (is_null($Member))
         {
             // set new image name
-            $image = md5(date('Y-m-d H:i:s') . $Member->member_id) . '.jpg';
+            $image = md5(date('Y-m-d H:i:s') . rand(1,100)) . '.jpg';
             
             // Create new instance
             $Member = new Member;
@@ -75,7 +75,10 @@ class Google extends Contract
             $Member->register_date = date('Y-m-d');
             $Member->is_pending = 1;
             $Member->save();
-            downloadImage($this->accountInfo->picture, SB . 'images/persons/' . $image);
+
+            var_dump($this->accountInfo);
+            exit;
+            //downloadImage($this->accountInfo->picture, SB . 'images/persons/' . $image);
         }
 
         $this->createSession($Member);

@@ -87,7 +87,7 @@ if (isset($_GET['destination'])) {
 
 // if member is logged out
 if (isset($_GET['logout']) && $_GET['logout'] == '1') {
-    OAuthFactory::revoke($_SESSION['accessToken']);
+    if (isset($_SESSION['accessToken'])) OAuthFactory::revoke($_SESSION['accessToken']);
     // write log
     utility::writeLogs($dbs, 'member', $_SESSION['email'], 'Login', $_SESSION['member_name'] . ' Log Out from address ' . $_SERVER['REMOTE_ADDR']);
     // completely destroy session cookie
