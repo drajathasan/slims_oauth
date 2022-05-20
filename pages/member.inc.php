@@ -745,9 +745,9 @@ if ($is_member_login) :
                 <?php
                 if ($_SESSION['m_membership_pending']) :
                     $info = 'Your member status is pending state! Please contact system administrator for more detail.';
-                    if ($_SESSION['m_member_type'] === 'Google Auth')
+                    if (is_null($_SESSION['m_member_type']))
                     {
-                        $info = $config['MessageForNewMember'];
+                        $info = strip_tags($config['MessageForNewMember'], ['a','strong'.'b']);
                     }
                     ?>
                     <i class="fas fa-lock mr-2 text-red"></i>Member status pending

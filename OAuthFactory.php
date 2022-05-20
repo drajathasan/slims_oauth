@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 14:42:27
- * @modify date 2022-05-19 14:17:17
+ * @modify date 2022-05-20 14:30:43
  * @license GPLv3
  * @desc [description]
  */
@@ -15,68 +15,120 @@ use SLiMSOAuth\Provider\Contract;
 
 final class OAuthFactory
 {
+    /**
+     * OAuthFactory error property
+     *
+     * @var string
+     */
     private static string $error = '';
-    private static string $currentDriver = '';
-    private static $driverInstance = null;
+
+    /**
+     * Provider name
+     *
+     * @var string
+     */
+    private static string $currentProvider = '';
+
+    /**
+     * Provider instance
+     *
+     * @var null|object
+     */
+    private static $providerInstance = null;
     
-    public static function use(string $driver)
+    /**
+     * Create provider instance 
+     *
+     * @param string $provider
+     * @return void
+     */
+    public static function use(string $provider)
     {
-        if (!class_exists($driver)) throw new Exception("Driver {$driver} not found!");
+        if (!class_exists($provider)) throw new Exception("Provider {$provider} not found!");
         
-        if (!is_null(self::$driverInstance)) return;
+        if (!is_null(self::$providerInstance)) return;
 
         try {
-            $driverInstance = new $driver;
+            $providerInstance = new $provider;
         
-            if ($driverInstance instanceof Contract)
+            if ($providerInstance instanceof Contract)
             {
-                self::$currentDriver = (new ReflectionClass($driverInstance))->getShortName();
-                self::$driverInstance = $driverInstance;
+                self::$currentProvider = (new ReflectionClass($providerInstance))->getShortName();
+                self::$providerInstance = $providerInstance;
             }
             else
             {
-                throw new Exception("Driver {$driver} is not extends SLiMSOAuth\Driver\Contract");
+                throw new Exception("Provider {$provider} is not extends SLiMSOAuth\Provider\Contract");
             }
         } catch (Exception $e) {
             self::$error = $e->getMessage();
         }
     }
 
+    /**
+     * Authentication process 
+     * with callback handle by user;
+     *
+     * @param Closure $next
+     * @return void
+     */
     public static function auth(Closure $next)
     {
         $OAuthFactory = new Static;
         
         try {
-            // Driver authentication and Create user
-            self::$driverInstance->auth()->createIfExists();
+            // Provider authentication and Create user
+            self::$providerInstance->auth()->createIfNotExists();
 
             // Next process
             $next($OAuthFactory);
             
         } catch (Exception $e) {
-            $OAuthFactory->error = $e->getMessage();
+            self::$error = $e->getMessage();
         }
     }
 
+    /**
+     * Logout and revoke 
+     * last user login
+     *
+     * @return void
+     */
     public static function revoke()
     {
-        self::$driverInstance->logout($_SESSION['accessToken']);
+        self::$providerInstance->logout($_SESSION['accessToken']);
     }
 
+    /**
+     * Getter for OAuth provider URL
+     *
+     * @return void
+     */
     public static function getAuthUrl()
     {
         try {
-            return self::$driverInstance->getAuthUrl();
+            return self::$providerInstance->getAuthUrl();
         } catch (Exception $e) {
-            self::$error = self::getDriver() . ' OAuth config error : <strong>' . $e->getMessage() . '</strong>';
+            self::$error = self::getProvider() . ' OAuth config error : <strong>' . $e->getMessage() . '</strong>';
         }
     }
 
-    public static function getDriver()
+    /**
+     * Get current provider name
+     *
+     * @return void
+     */
+    public static function getProvider()
     {
-        return self::$currentDriver;
+        return self::$currentProvider;
     }
 
+    /**
+     * Get some error from Factory
+     * or Provider error
+     *
+     * @return void
+     */
     public static function getError()
     {
         $error = '';
@@ -85,9 +137,9 @@ final class OAuthFactory
             $error .= self::$error;
         }
         
-        if (!is_null(self::$driverInstance) && !empty(self::$driverInstance->getError()))
+        if (!is_null(self::$providerInstance) && !empty(self::$providerInstance->getError()))
         {
-            $error .= self::$driverInstance->getError();
+            $error .= self::$providerInstance->getError();
         }
 
         return $error;

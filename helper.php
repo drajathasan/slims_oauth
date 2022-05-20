@@ -3,13 +3,19 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 07:47:29
- * @modify date 2022-05-19 22:30:43
+ * @modify date 2022-05-20 12:45:36
  * @license GPLv3
  * @desc [description]
  */
 
 if (!function_exists('assetsPath'))
 {
+    /**
+     * Retrieve plugin url link 
+     *
+     * @param string $additionalPath
+     * @return string
+     */
     function assetsUrl(string $additionalPath)
     {
         $pluginDirectory = basename(__DIR__);
@@ -17,8 +23,31 @@ if (!function_exists('assetsPath'))
     }
 }
 
+if (!function_exists('pluginDir'))
+{
+    /**
+     * Retrieve plugin path directory
+     *
+     * @param string $additionalPath
+     * @return string
+     */
+    function pluginDir(string $additionalDirPath)
+    {
+        $pluginDirectory = basename(__DIR__);
+        return SB . 'plugins/' . $pluginDirectory . DS . $additionalDirPath;
+    }
+}
+
 if (!function_exists('downloadImage'))
 {
+    /**
+     * Download user image after 
+     * OAuth login success
+     *
+     * @param string $url
+     * @param string $pathToSave
+     * @return void
+     */
     function downloadImage(string $url, string $pathToSave)
     {
         $client = new \GuzzleHttp\Client;
@@ -28,6 +57,11 @@ if (!function_exists('downloadImage'))
 
 if (!function_exists('getSLiMSOAuthConfig'))
 {
+    /**
+     * Getter for plugin configuration
+     *
+     * @return void
+     */
     function getSLiMSOAuthConfig()
     {
         $db = \SLiMS\DB::getInstance();
@@ -43,6 +77,13 @@ if (!function_exists('getSLiMSOAuthConfig'))
 
 if (!function_exists('isHttps'))
 {
+    /**
+     * This plugin need HTTPS connection,
+     * Https checker is need to make sure
+     * it running on HTTPS or not 
+     *
+     * @return boolean
+     */
     function isHttps()
     {
         $url = parse_url($_SERVER['HTTP_REFERER']);

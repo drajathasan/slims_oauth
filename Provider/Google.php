@@ -3,14 +3,14 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 08:05:39
- * @modify date 2022-05-19 23:22:43
+ * @modify date 2022-05-20 14:36:31
  * @license GPLv3
  * @desc [description]
  */
 
 namespace SLiMSOAuth\Provider;
 
-use Exception;
+use Exception,PDOException;
 use Google_Service_Oauth2 as Oauth2;
 use Google\Client;
 use SLiMS\DB;
@@ -21,12 +21,20 @@ class Google extends Contract
 {
     use GoogleSecret;
 
+    /**
+     * Setup client and set vendor credential
+     */
     public function __construct()
     {
         $this->client = new Client;
         $this->setCredential();
     }
 
+    /**
+     * Google\Client authentication
+     *
+     * @return void
+     */
     public function auth()
     {
         try {
@@ -36,7 +44,6 @@ class Google extends Contract
             
             // token check
             if (!isset($token['access_token'])) throw new Exception("Token not available");
-            
 
             // set access token
             $_SESSION['accessToken'] = $token['access_token'];
@@ -53,11 +60,21 @@ class Google extends Contract
         return $this;
     }
 
-    public function createIfExists()
+    /**
+     * Check and Create member data
+     * if not exists
+     *
+     * @return void
+     */
+    public function createIfNotExists()
     {
-        $Member = Member::select('m.member_id', 'm.member_name', 'm.mpasswd', 'm.inst_name','m.member_email', 'm.expire_date', 'm.register_date', 'm.is_pending','m.member_type_id', 'mt.member_type_name', 'mt.enable_reserve', 'mt.reserve_limit', 'm.member_image')
-                        ->leftJoin('mst_member_type AS mt', ['mt.member_type_id', '=', 'member.member_type_id'])
-                        ->where('member_id', $this->accountInfo->id)->get();
+        // Authentication is failed? give a null!;
+        if (is_null($this->accountInfo)) return;
+
+        // Make sure 
+        $Member = Member::select('member.member_id', 'member.member_name', 'member.inst_name','member.member_email', 'member.expire_date', 'member.register_date', 'member.is_pending','member.member_type_id', 'mt.member_type_name', 'mt.enable_reserve', 'mt.reserve_limit', 'member.member_image')
+                            ->leftJoin('mst_member_type AS mt', ['mt.member_type_id', '=', 'member.member_type_id'])
+                            ->where('member.member_email', $this->accountInfo->email)->get();
 
         if (is_null($Member))
         {
@@ -66,24 +83,30 @@ class Google extends Contract
             
             // Create new instance
             $Member = new Member;
-            $Member->member_id = $this->accountInfo->id;
+            $Member->member_id = substr($this->accountInfo->id, 0,20);
             $Member->member_name = $this->accountInfo->name;
             $Member->member_name = $this->accountInfo->name;
             $Member->member_email = $this->accountInfo->email;
             $Member->member_image = $image;
+            $Member->gender	= 0;
             $Member->expire_date = date('Y-m-d', strtotime('+1 year'));
             $Member->register_date = date('Y-m-d');
             $Member->is_pending = 1;
-            $Member->save();
+            
+            if (is_null($Member->save())) throw new Exception('Failed to create member data');
 
-            var_dump($this->accountInfo);
-            exit;
-            //downloadImage($this->accountInfo->picture, SB . 'images/persons/' . $image);
+            downloadImage($this->accountInfo->picture, SB . 'images/persons/' . $image);
         }
 
         $this->createSession($Member);
     }
 
+    /**
+     * Create member session
+     *
+     * @param Object $Member
+     * @return void
+     */
     protected function createSession(Object $Member)
     {
         // fill all sessions var
@@ -93,8 +116,8 @@ class Google extends Contract
         $_SESSION['m_institution'] = null;
         $_SESSION['m_logintime'] = time();
         $_SESSION['m_expire_date'] = $Member->expire_date;
-        $_SESSION['m_member_type_id'] = $Member->m_member_type_id??0;
-        $_SESSION['m_member_type'] = $Member->m_member_type_name??'Google Auth';
+        $_SESSION['m_member_type_id'] = $Member->member_type_id;
+        $_SESSION['m_member_type'] = $Member->member_type_name;
         $_SESSION['m_register_date'] = $Member->register_date;
         $_SESSION['m_membership_pending'] = intval($Member->is_pending)?true:false;
         $_SESSION['m_is_expired'] = false;
@@ -117,16 +140,30 @@ class Google extends Contract
         $UpdateMember->save();
     }
 
+    /**
+     * Revoke Google\Client token
+     *
+     * @param string $token
+     * @return void
+     */
     public function logout(string $token = '')
     {
         $this->client->revokeToken($token);
     }
 
+    /**
+     * Get some error
+     *
+     * @return void
+     */
     public function getError()
     {
         return isset($this->error) ? $this->error : null;
     }
 
+    /** 
+     * Get vendor authentication URL
+     */
     public function getAuthUrl()
     {
         return $this->client->createAuthUrl();
