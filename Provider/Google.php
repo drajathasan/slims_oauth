@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 08:05:39
- * @modify date 2022-05-20 14:36:31
+ * @modify date 2022-05-20 22:38:54
  * @license GPLv3
  * @desc [description]
  */
@@ -69,7 +69,7 @@ class Google extends Contract
     public function createIfNotExists()
     {
         // Authentication is failed? give a null!;
-        if (is_null($this->accountInfo)) return;
+        if (!property_exists($this, 'accountInfo')) return;
 
         // Make sure 
         $Member = Member::select('member.member_id', 'member.member_name', 'member.inst_name','member.member_email', 'member.expire_date', 'member.register_date', 'member.is_pending','member.member_type_id', 'mt.member_type_name', 'mt.enable_reserve', 'mt.reserve_limit', 'member.member_image')
@@ -84,7 +84,6 @@ class Google extends Contract
             // Create new instance
             $Member = new Member;
             $Member->member_id = substr($this->accountInfo->id, 0,20);
-            $Member->member_name = $this->accountInfo->name;
             $Member->member_name = $this->accountInfo->name;
             $Member->member_email = $this->accountInfo->email;
             $Member->member_image = $image;
