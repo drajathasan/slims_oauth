@@ -975,9 +975,7 @@ $SLiMSOAuthUrl = OAuthFactory::getAuthUrl();
                 <!-- Captcha in form - end -->
                 <input type="submit" name="logMeIn" value="<?php echo __('Login'); ?>" class="memberButton"/>
                 <!-- Google Login -->
-                <div class="d-block my-2">
-                    <a href="<?= $SLiMSOAuthUrl ?>" class="btn btn-outline-primary <?= (empty($SLiMSOAuthUrl) ? 'disabled' : '') ?>"><img class="w-5 h-5 mr-2" src="<?= assetsUrl('images/google-logo.e086107b.svg') ?>"/> Login With Google</a>
-                </div>
+                <?= $SLiMSOAuthUrl ?>
             </form>
         </div>
     </div>

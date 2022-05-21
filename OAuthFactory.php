@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 14:42:27
- * @modify date 2022-05-20 14:30:43
+ * @modify date 2022-05-21 11:01:02
  * @license GPLv3
  * @desc [description]
  */
@@ -107,7 +107,8 @@ final class OAuthFactory
     public static function getAuthUrl()
     {
         try {
-            return self::$providerInstance->getAuthUrl();
+            $url = self::$providerInstance->getAuthUrl();
+            return self::$providerInstance->createButtonAuth($url);
         } catch (Exception $e) {
             self::$error = self::getProvider() . ' OAuth config error : <strong>' . $e->getMessage() . '</strong>';
         }

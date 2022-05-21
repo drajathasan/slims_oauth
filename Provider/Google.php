@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 08:05:39
- * @modify date 2022-05-20 22:38:54
+ * @modify date 2022-05-21 10:59:46
  * @license GPLv3
  * @desc [description]
  */
@@ -166,5 +166,22 @@ class Google extends Contract
     public function getAuthUrl()
     {
         return $this->client->createAuthUrl();
+    }
+
+    /**
+     * Generate html button 
+     *
+     * @param string $url
+     * @return void
+     */
+    public function createButtonAuth(string $url)
+    {
+        $disabled = empty($url) ? 'disabled' : '';
+        $icon = assetsUrl('images/google-logo.e086107b.svg');
+        return <<<HTML
+            <div class="d-block my-2">
+                <a href="{$url}" class="btn btn-outline-primary {$disabled}"><img class="w-5 h-5 mr-2" src="{$icon}"/> Login With Google</a>
+            </div>
+        HTML;
     }
 }

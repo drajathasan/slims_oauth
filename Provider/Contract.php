@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-18 12:43:40
- * @modify date 2022-05-20 11:22:49
+ * @modify date 2022-05-21 10:59:54
  * @license GPLv3
  * @desc [description]
  */
@@ -22,4 +22,5 @@ abstract class Contract
     abstract protected function createSession(Object $Data);
     abstract protected function setCredential();
     abstract public function getAuthUrl();
+    abstract public function createButtonAuth(string $url);
 }

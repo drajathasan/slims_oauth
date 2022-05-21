@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-05-19 10:29:29
- * @modify date 2022-05-19 22:45:26
+ * @modify date 2022-05-21 10:53:45
  * @license GPLv3
  * @desc [description]
  */
@@ -103,7 +103,7 @@ if (isset($_GET['config']) && !empty($_GET['config']) && file_exists($path = __D
     ?>
 </div>
 <div class="w-100 mt-5 text-center">
-    <strong class="text-secondary d-block mx-auto col-8">Another OAuth provider is available in another "Universe", call <a href="https://t.me/drajathasan">"Doctor D"</a> to cast a spell to make another provider available in your universe.</strong>
+    <strong class="text-secondary d-block mx-auto col-8">Another OAuth provider is available in another "Universe", call <a href="https://t.me/drajathasan" class="notAJAX" target="blank">"Mas D - 🧙"</a> to cast a spell to make another provider available in your universe.</strong>
 </div>
 <script>
     $('.btn-config').click(function(){

@@ -1,4 +1,7 @@
 # SLiMS OAuth Plugin
+
+![preview.png](./assets/images/preview.png) 
+
 # NB : SLiMS anda wajib sudah online dan menggunakan koneksi https
 
 Indonesia
